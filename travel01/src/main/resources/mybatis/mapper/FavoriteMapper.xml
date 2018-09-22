@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.itcast.mapper.FavoriteMapper">
+    <insert id="addFavorite">
+        insert into tab_favorite values (#{rid},NOW(),#{uid})
+    </insert>
+    <update id="updateRouteFavoriteNum">
+        update tab_route set count=count+1 where rid=#{rid}
+    </update>
+    <select id="isFavoriteByRidAndUserId" resultType="cn.itcast.domain.Favorite">
+        select * from tab_favorite where rid = #{rid} and uid = #{uid}
+    </select>
+    
+    <resultMap id="favoriteMap" type="Favorite" autoMapping="true">
+        <id column="rid" property="route.rid"/>
+        <id column="uid" property="user.uid"/>
+        <association property="route" javaType="Route" autoMapping="true">
+            <id column="rid" property="rid"/>
+        </association>
+    </resultMap>
+    <select id="findFavoriteListByPage" resultMap="favoriteMap">
+        select * from tab_favorite f,tab_route r where f.rid=r.rid and  f.uid = #{uid} order by f.date desc
+    </select>
+</mapper>

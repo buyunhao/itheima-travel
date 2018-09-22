@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.itcast.mapper.RouteMapper">
+    <select id="getPopularityRouteList" resultType="cn.itcast.domain.Route">
+        select * from tab_route where rflag = '1' order by count desc limit 0,4
+    </select>
+    <select id="getNewsRouteList" resultType="cn.itcast.domain.Route">
+        select * from tab_route where rflag = '1' order by rdate desc limit 0,4
+    </select>
+    <select id="getThemeRouteList" resultType="cn.itcast.domain.Route">
+        select * from tab_route where rflag = '1' and isThemeTour = '1' order by rdate desc limit 0,4
+    </select>
+    <select id="findRouteListByPage" resultType="cn.itcast.domain.Route">
+        SELECT * FROM tab_route WHERE rflag='1' and cid=#{cid}
+        <if test="rname!=null and rname.trim()!=''">
+            and rname like '%' #{rname} '%'
+        </if>
+    </select>
+
+    <resultMap id="routeCategorySellerImg" type="Route" autoMapping="true">
+        <id column="rid" property="rid"/>
+        <association property="category" javaType="Category" autoMapping="true">
+            <id column="cid" property="cid"/>
+        </association>
+        <association property="seller" javaType="Seller" autoMapping="true">
+            <id column="sid" property="sid"/>
+        </association>
+        <collection property="routeImgList" javaType="list" ofType="RouteImg" autoMapping="true">
+            <id column="rgid" property="rgid"/>
+        </collection>
+    </resultMap>
+    <select id="findRouteByRid" resultMap="routeCategorySellerImg">
+        select * from tab_category c,tab_route r,tab_seller s,tab_route_img i
+        where r.cid = c.cid
+          and r.rid = i.rid
+          and r.rflag = "1"
+          and r.rid = #{rid}
+    </select>
+</mapper>
